@@ -39,7 +39,7 @@ class resultss:
 
 def detect(save_img=False):
     
-    
+    cikissüresi=0
     p1=resultss()
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -117,6 +117,8 @@ def detect(save_img=False):
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
+                sınıf=[]
+                kordinat=[]
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
@@ -127,6 +129,7 @@ def detect(save_img=False):
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
@@ -134,8 +137,6 @@ def detect(save_img=False):
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
-                        sınıf=[]
-                        kordinat=[]
                         
                         label = f'{names[int(cls)]} {conf:.2f}'
                         clas = f'{names[int(cls)]}'
@@ -146,12 +147,41 @@ def detect(save_img=False):
                         kordinat.append(konum)
                        # maps=str(maps).strip("tensor")
                        # p1.deniz(clas, konum)
-                        print(clas)
-                        print(konum[1]) #ilk x degeri
-                        if (clas == "CIKIS" and konum[1]<=172): #soldaki cikis son noktaya gelince
-                            print("dayandı")
+                
+                
+     ####################### ilk cikisi ayarlamal icin#########################
+                ilkcikis=0
+                ilkcikisikincix=0
+                if (sınıf[0] == "CIKIS" and sınıf[1] =="CIKIS"):
+                    if(kordinat[0][0]<kordinat[1][0]):
+                        ilkcikis = kordinat[0][0]
+                        ilkcikisikincix=kordinat[0][2]
+                    else:
+                        ilkcikis = kordinat[1][0]
+                        ilkcikisikincix=kordinat[1][2]
+                elif (sınıf[0] == "CIKIS"): 
+                     ilkcikis = kordinat[0][0]        
+                print(ilkcikis) #ilk cikisin x degeri
+                print(ilkcikisikincix) #ilk cikisin x degeri
+                
+      ###################düsüp düsmedigini kontrol et ###################          
+            
+                if (sınıf[0] == "CIKIS" and ilkcikis<=668): #soldaki cikis son noktaya gelince
+                    print("son noktaya dayandi")
+                    if(ilkcikisikincix>=703):
+                        print("Cikislar ilk kez disari ciktii")
+                        cikissüresi+=1 # il cikista kac frame boyunca dısarda onu hesaplamak icin-- 13 frame
+                        if(cikissüresi==14):
+                            print(sınıf[1])
+                            if(sınıf.index("BOS")):                              
+                                print("kalip düsmüs")
                         
-                       
+                        
+                print(cikissüresi)    
+                print(sınıf)
+                print(kordinat)
+                sınıf.clear()
+                kordinat.clear()
                         
                  
 
