@@ -13,11 +13,11 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
-lists = []
 
 
 
 
+########################### önceki istenilende kurdugum clas yapısı, bu yaptıklarımda kullanmadım, ilerde isime yaramazsa silicem############################################
 class resultss:
     listcordinate=[]
     listname=[]
@@ -38,7 +38,7 @@ class resultss:
 
 
 def detect(save_img=False):
-    
+    adet_sayisi=0
     cikissüresi=0
     p1=resultss()
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -141,6 +141,7 @@ def detect(save_img=False):
                         label = f'{names[int(cls)]} {conf:.2f}'
                         clas = f'{names[int(cls)]}'
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                      
                         maps= torch.tensor(xyxy).view(1, 4)[0]
                         konum=maps.numpy()
                         sınıf.append(clas)
@@ -149,38 +150,127 @@ def detect(save_img=False):
                        # p1.deniz(clas, konum)
                 
                 
-     ####################### ilk cikisi ayarlamal icin#########################
-                ilkcikis=0
-                ilkcikisikincix=0
-                if (sınıf[0] == "CIKIS" and sınıf[1] =="CIKIS"):
-                    if(kordinat[0][0]<kordinat[1][0]):
+     ####################### ilk cikisi bulup kordinatlarini icin #########################
+                ilkcikis=0 # ilk cikisin ilk x degerini tutacak
+                ilkcikisikincix=0 # ilk cikisin ikinci x degerini tutacak
+                
+                if len(sınıf)==4:              
+                    if (sınıf[0] == "CIKIS" and sınıf[2] =="CIKIS"):
+                        if(kordinat[0][0]<kordinat[2][0]):
+                            ilkcikis = kordinat[0][0]
+                            ilkcikisikincix=kordinat[0][2]
+                        else:
+                            ilkcikis = kordinat[2][0]
+                            ilkcikisikincix=kordinat[2][2]
+                        
+                    elif (sınıf[1] == "CIKIS" and sınıf[2] =="CIKIS"):
+                        if(kordinat[1][0]<kordinat[2][0]):
+                            ilkcikis = kordinat[1][0]
+                            ilkcikisikincix=kordinat[1][2]
+                        else:
+                            ilkcikis = kordinat[2][0]
+                            ilkcikisikincix=kordinat[2][2]
+                            
+                    elif (sınıf[0] == "CIKIS" and sınıf[1] =="CIKIS"):
+                        if(kordinat[0][0]<kordinat[1][0]):
+                            ilkcikis = kordinat[0][0]
+                            ilkcikisikincix=kordinat[0][2]
+                        else:
+                            ilkcikis = kordinat[1][0]
+                            ilkcikisikincix=kordinat[1][2]
+                            
+                    elif (sınıf[0] == "CIKIS" and sınıf[3] =="CIKIS"):
+                        if(kordinat[0][0]<kordinat[1][0]):
+                            ilkcikis = kordinat[0][0]
+                            ilkcikisikincix=kordinat[0][2]
+                        else:
+                            ilkcikis = kordinat[3][0]
+                            ilkcikisikincix=kordinat[3][2]
+                            
+                    elif (sınıf[1] == "CIKIS" and sınıf[3] =="CIKIS"):
+                        if(kordinat[1][0]<kordinat[3][0]):
+                            ilkcikis = kordinat[1][0]
+                            ilkcikisikincix=kordinat[1][2]
+                        else:
+                            ilkcikis = kordinat[3][0]
+                            ilkcikisikincix=kordinat[3][2]
+                    elif (sınıf[2] == "CIKIS" and sınıf[3] =="CIKIS"):
+                        if(kordinat[2][0]<kordinat[3][0]):
+                            ilkcikis = kordinat[2][0]
+                            ilkcikisikincix=kordinat[2][2]
+                        else:
+                            ilkcikis = kordinat[3][0]
+                            ilkcikisikincix=kordinat[3][2]
+
+                elif len(sınıf)==3:              
+                    if (sınıf[0] == "CIKIS" and sınıf[2] =="CIKIS"):
+                        if(kordinat[0][0]<kordinat[2][0]):
+                            ilkcikis = kordinat[0][0]
+                            ilkcikisikincix=kordinat[0][2]
+                        else:
+                            ilkcikis = kordinat[2][0]
+                            ilkcikisikincix=kordinat[2][2]
+                        
+                    elif (sınıf[1] == "CIKIS" and sınıf[2] =="CIKIS"):
+                        if(kordinat[1][0]<kordinat[2][0]):
+                            ilkcikis = kordinat[1][0]
+                            ilkcikisikincix=kordinat[1][2]
+                        else:
+                            ilkcikis = kordinat[2][0]
+                            ilkcikisikincix=kordinat[2][2]
+                    elif (sınıf[0] == "CIKIS" and sınıf[1] =="CIKIS"):
+                        if(kordinat[0][0]<kordinat[1][0]):
+                            ilkcikis = kordinat[0][0]
+                            ilkcikisikincix=kordinat[0][2]
+                        else:
+                            ilkcikis = kordinat[1][0]
+                            ilkcikisikincix=kordinat[1][2]
+                                                    
+                elif len(sınıf)==2:
+                    if (sınıf[0] == "CIKIS"):
                         ilkcikis = kordinat[0][0]
                         ilkcikisikincix=kordinat[0][2]
-                    else:
+                    elif (sınıf[1] == "CIKIS"):
                         ilkcikis = kordinat[1][0]
                         ilkcikisikincix=kordinat[1][2]
-                elif (sınıf[0] == "CIKIS"): 
-                     ilkcikis = kordinat[0][0]        
-                print(ilkcikis) #ilk cikisin x degeri
-                print(ilkcikisikincix) #ilk cikisin x degeri
+                        
+                elif (len(sınıf)==1 and sınıf[0] == "CIKIS"):
+                    ilkcikis = kordinat[0][0]
+                    ilkcikisikincix=kordinat[0][2]
+                
+
+           
                 
       ###################düsüp düsmedigini kontrol et ###################          
             
-                if (sınıf[0] == "CIKIS" and ilkcikis<=668): #soldaki cikis son noktaya gelince
-                    print("son noktaya dayandi")
-                    if(ilkcikisikincix>=703):
-                        print("Cikislar ilk kez disari ciktii")
-                        cikissüresi+=1 # il cikista kac frame boyunca dısarda onu hesaplamak icin-- 13 frame
-                        if(cikissüresi==14):
-                            print(sınıf[1])
-                            if(sınıf.index("BOS")):                              
-                                print("kalip düsmüs")
+                if (ilkcikis<=668 ): #sistem en sola dayandiginda ilk cikisin 1.x degeri 667-668
+                    cv2.putText(im0,"son noktaya dayali", (10,700),cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),3)
+                    if(ilkcikisikincix>=703 and cikissüresi<22): #2.kez cikisindaki ortalama frame sayisi => 22
+                        #cv2.putText(im0,"ilk kez cikti", (700,70),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)
+                        cikissüresi+=1 # ilk cikista kac frame boyunca dısarda onu hesaplamak icin => 13-20 frame
+                        cv2.putText(im0,str(cikissüresi), (10,400),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)
                         
                         
-                print(cikissüresi)    
-                print(sınıf)
-                print(kordinat)
-                sınıf.clear()
+                if(cikissüresi>=22 and ilkcikisikincix>=703 and ilkcikis<=668 ): # 2.cıkısta kalıbın düsüp düsmedigine bakılan yer
+                    cikissüresi+=1
+                    #cv2.putText(im0,"2. kez cikti", (650,70),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)
+                    cv2.putText(im0,str(cikissüresi), (10,400),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3) 
+                    if("KALIP" in sınıf):                              
+                        cv2.putText(im0,"kalip dusmemis", (10,70),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)
+                    elif("BOS" in sınıf):                              
+                        cv2.putText(im0,"kalip dusmus", (10,70),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)  
+                if (ilkcikis>=800 and cikissüresi >= 24): #sistem geri dönerken=> adet sayısı hesapnıyor, cıkılı kaldıgı süre sifirlaniyor
+                    cikissüresi=0
+                    adet_sayisi+=1
+                    cv2.putText(im0,str(adet_sayisi), (10,70),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)
+                    
+                cv2.putText(im0,str(ilkcikis), (800,700),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3) # ilk cikisin 1. x degerini görmek icin
+                cv2.putText(im0,str(ilkcikisikincix), (800,900),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),3)  # ilk cikisin 2. x degerini görmek icin
+                                
+                         
+                print(sınıf) #sınıf elemanlarını görmek icin
+                
+                sınıf.clear()  # diger resme gecince tutulan sınıf ve kordinatlar silinsin diye
                 kordinat.clear()
                         
                  
@@ -189,8 +279,8 @@ def detect(save_img=False):
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
-            if view_img:
-                cv2.imshow(str(p), im0)
+            if True:
+                cv2.imshow("result", im0)
                 cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections)
@@ -255,3 +345,4 @@ if __name__ == '__main__':
                 strip_optimizer(opt.weights)
         else:
             detect()
+
